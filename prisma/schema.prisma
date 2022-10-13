@@ -17,3 +17,65 @@ model Conteudo {
     link                          String 
     imagem                        Bytes
 }
+
+model Parceiro{
+    id                            String @id @default(uuid())
+    linkRedirecionamento          String 
+    logoParceiro                  Bytes
+}
+
+model Comodante{
+  idComodante                         String @id @default(uuid())
+  primeiroNomeComodante               String 
+  sobrenomeComodante                  String
+  emailComodante                      String  @unique
+  senhaComodante                      String
+  nascimentoComodante                 String
+  cpfComodante                        String  @unique
+  rgComodante                         String
+  enderecoComodante                   String
+  cidadeEstadoComodante               String
+  uploadRgComodante                   Bytes
+  uploadCpfComodante                  Bytes
+  uploadComprovanteEnderecoComodante  Bytes
+
+  terrenos                            Terreno[]
+}
+
+model Comodatario{
+  idComodatario                         String @id @default(uuid())
+  primeiroNomeComodatario               String 
+  sobrenomeComodatario                  String
+  emailComodatario                      String  @unique
+  senhaComodatario                      String
+  nascimentoComodatario                 String
+  cpfComodatario                        String  @unique
+  rgComodatario                         String
+  enderecoComodatario                   String
+  cidadeEstadoComodatario               String
+  uploadRgComodatario                   Bytes
+  uploadCpfComodatario                  Bytes
+  uploadComprovanteEnderecoComodatario  Bytes
+
+  terreno                               Terreno?
+}
+
+model Terreno{
+  idTerreno                  String @id @default(uuid())
+  cep                        String
+  endereco                   String
+  numero                     Int
+  bairro                     String
+  cidade                     String
+  complemento                String
+  metragem                   String
+  tituloCard                 String
+  descricaoCard              String
+  uploadImagem               Bytes
+  uploadEscritura            Bytes
+  Comodatario_idComodatario  String @unique
+  Comodante_idComodante      String
+
+  comodatario Comodatario @relation(fields: [Comodatario_idComodatario], references: [idComodatario])
+  comodante   Comodante   @relation(fields: [Comodante_idComodante],     references: [idComodante])
+}
