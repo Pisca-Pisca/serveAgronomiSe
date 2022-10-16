@@ -15,13 +15,13 @@ model Conteudo {
     titulo                        String 
     descricao                     String 
     link                          String 
-    imagem                        Bytes
+    imagem                        String
 }
 
 model Parceiro{
     id                            String @id @default(uuid())
     linkRedirecionamento          String 
-    logoParceiro                  Bytes
+    logoParceiro                  String
 }
 
 model Comodante{
@@ -35,9 +35,9 @@ model Comodante{
   rgComodante                         String
   enderecoComodante                   String
   cidadeEstadoComodante               String
-  uploadRgComodante                   Bytes
-  uploadCpfComodante                  Bytes
-  uploadComprovanteEnderecoComodante  Bytes
+  uploadRgComodante                   String
+  uploadCpfComodante                  String
+  uploadComprovanteEnderecoComodante  String
 
   terrenos                            Terreno[]
 }
@@ -53,9 +53,9 @@ model Comodatario{
   rgComodatario                         String
   enderecoComodatario                   String
   cidadeEstadoComodatario               String
-  uploadRgComodatario                   Bytes
-  uploadCpfComodatario                  Bytes
-  uploadComprovanteEnderecoComodatario  Bytes
+  uploadRgComodatario                   String
+  uploadCpfComodatario                  String
+  uploadComprovanteEnderecoComodatario  String
 
   terreno                               Terreno?
 }
@@ -71,8 +71,8 @@ model Terreno{
   metragem                   String
   tituloCard                 String
   descricaoCard              String
-  uploadImagem               Bytes
-  uploadEscritura            Bytes
+  uploadImagem               String
+  uploadEscritura            String
   Comodatario_idComodatario  String @unique
   Comodante_idComodante      String
 
