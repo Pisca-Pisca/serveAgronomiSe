@@ -3,12 +3,17 @@ import parceirosController from "./controllers/parceirosController";
 import upload from "./config/uploadArquivos";
 import comodatarioController from "./controllers/comodatarioController";
 import comodanteController from "./controllers/comodanteController";
+import conteudoController from "./controllers/conteudoController";
 
 const router =  Router();
 
 // PARCEIROS \\
 router.post('/api/parceiro', upload.uploadArquivos().single("logoParceiro"), parceirosController.createParceiro);
 router.get('/api/parceiros', parceirosController.findAllParceiro);
+
+// CONTEÚDO \\
+router.post('/api/conteudo', upload.uploadArquivos().single("image"), conteudoController.createConteudo);
+router.get('/api/conteudos', conteudoController.findAllConteudos);
 
 // COMODATÁRIO \\
 router.post('/api/comodatario', upload.uploadArquivos().fields(
@@ -17,6 +22,5 @@ router.post('/api/comodatario', upload.uploadArquivos().fields(
 // COMODANTE \\
 router.post('/api/comodante', upload.uploadArquivos().fields(
     [ {name: "uploadDocumentoFotoComodante"}, {name: "uploadComprovanteEnderecoComodante"}]), comodanteController.createComodante);
-
 
 export {router};
