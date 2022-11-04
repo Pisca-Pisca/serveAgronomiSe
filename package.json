@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/sever.ts",
   "scripts": {
-    "postinstall": "tsc",
+    "start": "ts-node src/server.ts",
+    "build": "tsc",
     "dev": "tsnd --exit-child src/server.ts"
   },
   "keywords": [],
