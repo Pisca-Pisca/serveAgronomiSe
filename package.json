@@ -2,9 +2,9 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/sever.js",
+  "main": "src/sever.ts",
   "scripts": {
-    "build": "tsc",
+    "postinstall": "tsc",
     "dev": "tsnd --exit-child src/server.ts"
   },
   "keywords": [],
