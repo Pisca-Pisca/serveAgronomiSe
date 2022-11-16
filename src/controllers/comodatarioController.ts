@@ -21,76 +21,107 @@ const app = initializeApp(config);
 const storage = getStorage(app, config.storageBucket);
 const db = getFirestore(app);
 let arquivosLink: any[] = [];
+var cpfExiste: boolean = false;
 
 export default {
   async createComodatario(req: any, res: any) {
     try {
       const body: any = req.body;
-      const arquivosMulter: any = req.files;
-      let arquivos: any[] = [];
+      let arquivos: any[] = [];      
+      arquivosLink = [];
 
-      arquivos.push(arquivosMulter["uploadDocumentoFotoComodatario"][0], arquivosMulter["uploadComprovanteEnderecoComodatario"][0]);
+      await usuarioExiste(body.cpfComdatario);
 
-      await arquivos.forEach(async (arquivo: any) => {
-        await uploadArquivosFirebase(arquivo);
-      });
-
-      setTimeout(() => {
-        addDoc(collection(db, "Comodatario"), { 
-          ...body,
-          uploadDocumentoFotoComodatario: arquivosLink[0],
-          uploadComprovanteEnderecoComodatario: arquivosLink[1]
-        }).then(() => {
-          return res.status(201).json({
-            message: "Comodatário cadastrado com sucesso.",
-            success: true,
-          });
+      arquivos.push(req.files["uploadDocumentoFotoComodatario"][0], req.files["uploadComprovanteEnderecoComodatario"][0]);
+    
+      if(!cpfExiste){
+        arquivos.forEach(async arq => {
+          await uploadArquivosFirebase(arq).then(
+            async resp => {
+              if(resp === 2){                
+              await addDoc(collection(db, "Comodatario"), { 
+                ...body,
+                uploadDocumentoFotoComodatario: arquivosLink[0],
+                uploadComprovanteEnderecoComodatario: arquivosLink[1]
+              }).then(() => {
+                return res.status(201).json({
+                  message: "Comodatário cadastrado com sucesso.",
+                  success: true,
+                });
+              });
+              }
+            }
+          );
         });
-      }, 3000);
+    }else{
+      return res.status(200).json({
+        message: "Comodatário já é um usuário do Agronomi-se.",
+        success: false,
+      });
+    }
 
     } catch (error) {
       console.log(error);
       return res.status(400).json({
         data: {},
-        error: "Ocorreu um erro ao criar o comodatário.",
+        error: "Ocorreu um erro ao criar o Comodatário.",
         success: false,
       });
     }
-  },
+  }
 };
 
-function uploadArquivosFirebase(arq: any){
-  const fileName = arq.originalname.split(".")[0];
-
-  //Referenciando pasta de upload
-  const storageRef = ref(storage, "Comodatarios/");
-  const imageRef = ref(storageRef, "DocumentosPessoais/" + fileName);
-
-  const uploadTask = uploadBytesResumable(imageRef, arq.buffer);
-
-   // Escutando os estados de mudança, erros e finalização do upload.
-   uploadTask.on("state_changed",
-    (snapshot) => {
-      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log("Upload is " + progress + "% done");
-      switch (snapshot.state) {
-        case "paused":
-          console.log("Upload is paused");
-          break;
-        case "running":
-          console.log("Upload is running");
-          break;
+async function usuarioExiste(cpfBody: string){
+    //Verifica se o usuário existe
+    await getDocs(collection(db, "Comodatario")).then(
+      documentos => {
+        documentos.forEach(doc => {
+          let cpf = doc.data().cpfComodatario;
+          
+          if(cpf === cpfBody){
+            cpfExiste = true;
+          }else{
+            cpfExiste = false;
+          }
+        });
       }
-    },
-    (error) => {
-        console.log("Erro ao fazer upload do arquivo.", error);
-    },
-    () => {
-      // Upload completed successfully, now we can get the download URL
-      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-        arquivosLink.push(downloadURL);
-      });
-    }
-  );
+    );
+}
+
+function uploadArquivosFirebase(arq: any){
+    const fileName = arq.originalname.split(".")[0];
+
+    //Referenciando pasta de upload
+    const storageRef = ref(storage, "Comodatarios/");
+    const imageRef = ref(storageRef, "DocumentosPessoais/" + fileName);
+  
+    const uploadTask = uploadBytesResumable(imageRef, arq.buffer);
+  
+    return new Promise(function (resolve, reject) {
+     // Escutando os estados de mudança, erros e finalização do upload.
+     uploadTask.on("state_changed",
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        switch (snapshot.state) {
+          case "paused":
+            console.log("Upload is paused");
+            break;
+          case "running":
+            console.log("Upload is running");
+            break;
+        }
+      },
+      (error) => {
+          console.log("Erro ao fazer upload do arquivo.", error);
+      },
+      () => {
+        // Upload completed successfully, now we can get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          resolve(arquivosLink.push(downloadURL));
+        })
+      }
+    );
+  });
 }

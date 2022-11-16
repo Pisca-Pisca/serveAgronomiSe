@@ -20,7 +20,7 @@ router.post('/api/comodatario', upload.uploadArquivos().fields(
     [ {name: "uploadDocumentoFotoComodatario"}, {name: "uploadComprovanteEnderecoComodatario"}]), comodatarioController.createComodatario);
 
 // COMODANTE \\
-router.post('/api/comodante', upload.uploadArquivos().fields(
+router.post('/api/comodante',  upload.uploadArquivos().fields(
     [ {name: "uploadDocumentoFotoComodante"}, {name: "uploadComprovanteEnderecoComodante"}]), comodanteController.createComodante);
-
+    
 export {router};
