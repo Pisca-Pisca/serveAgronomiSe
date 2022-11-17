@@ -57,7 +57,22 @@ export default {
         success: false,
       });
     }
-  }
+  },
+  async findAllTerrenos(req: any, res: any) {
+    try {
+     const terrenosRef = await getDocs(collection(db, "Terreno"));
+
+     const terrenos = terrenosRef.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+
+      return res.status(200).json(terrenos);
+    } catch (error) {
+      return res.status(400).json({
+        data: [],
+        error: "Ocorreu um erro ao buscar os terrenos.",
+        success: false,
+      });
+    }
+  },
 };
 
 function uploadArquivosFirebase(arq: any){

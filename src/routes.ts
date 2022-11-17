@@ -28,6 +28,7 @@ router.post('/api/comodante',  upload.uploadArquivos().fields(
 // TERRENO \\
 router.post('/api/terreno',  upload.uploadArquivos().fields(
     [ {name: "uploadImagem"}, {name: "uploadEscritura"}]), terrenoController.createTerreno);
+router.get('/api/terreno', terrenoController.findAllTerrenos);
 
 //AUTH\\
 router.post('/api/criarUsuarioLogin', authController.criarUsuarioLogin);
