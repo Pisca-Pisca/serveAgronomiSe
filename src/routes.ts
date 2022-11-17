@@ -5,6 +5,7 @@ import comodatarioController from "./controllers/comodatarioController";
 import comodanteController from "./controllers/comodanteController";
 import conteudoController from "./controllers/conteudoController";
 import terrenoController from "./controllers/terrenoController";
+import authController from "./controllers/authController";
 
 const router =  Router();
 
@@ -27,5 +28,10 @@ router.post('/api/comodante',  upload.uploadArquivos().fields(
 // TERRENO \\
 router.post('/api/terreno',  upload.uploadArquivos().fields(
     [ {name: "uploadImagem"}, {name: "uploadEscritura"}]), terrenoController.createTerreno);
+
+//AUTH\\
+router.post('/api/criarUsuarioLogin', authController.criarUsuarioLogin);
+router.post('/api/login', authController.Login);
+router.post('/api/resetSenha', authController.resetarSenha);
     
 export {router};
