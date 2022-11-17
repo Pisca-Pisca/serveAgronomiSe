@@ -4,6 +4,7 @@ import upload from "./config/uploadArquivos";
 import comodatarioController from "./controllers/comodatarioController";
 import comodanteController from "./controllers/comodanteController";
 import conteudoController from "./controllers/conteudoController";
+import terrenoController from "./controllers/terrenoController";
 
 const router =  Router();
 
@@ -22,5 +23,9 @@ router.post('/api/comodatario', upload.uploadArquivos().fields(
 // COMODANTE \\
 router.post('/api/comodante',  upload.uploadArquivos().fields(
     [ {name: "uploadDocumentoFotoComodante"}, {name: "uploadComprovanteEnderecoComodante"}]), comodanteController.createComodante);
+
+// TERRENO \\
+router.post('/api/terreno',  upload.uploadArquivos().fields(
+    [ {name: "uploadImagem"}, {name: "uploadEscritura"}]), terrenoController.createTerreno);
     
 export {router};

@@ -21,32 +21,27 @@ const app = initializeApp(config);
 const storage = getStorage(app, config.storageBucket);
 const db = getFirestore(app);
 let arquivosLink: any[] = [];
-var cpfExiste: boolean = false;
 
 export default {
-  async createComodante(req: any, res: any) {
+  async createTerreno(req: any, res: any) {
     try {
       const body: any = req.body;
       let arquivos: any[] = [];      
       arquivosLink = [];
 
-      await usuarioExiste(body.cpfComodante);
-
-      arquivos.push(req.files["uploadDocumentoFotoComodante"][0], req.files["uploadComprovanteEnderecoComodante"][0]);
+      arquivos.push(req.files["uploadImagem"][0], req.files["uploadEscritura"][0]);
     
-      if(!cpfExiste){
         arquivos.forEach(async arq => {
           await uploadArquivosFirebase(arq).then(
             async resp => {
               if(resp === 2){                
-              await addDoc(collection(db, "Comodante"), { 
+              await addDoc(collection(db, "Terreno"), { 
                 ...body,
-                uploadDocumentoFotoComandante: arquivosLink[0],
-                uploadComprovanteEnderecoComandante: arquivosLink[1]
-              }).then((dado) => {
-                return res.status(201).json({                  
-                  data: dado.id,
-                  message: "Comodante cadastrado com sucesso.",
+                uploadImagem: arquivosLink[0],
+                uploadEscritura: arquivosLink[1]
+              }).then(() => {
+                return res.status(201).json({
+                  message: "Terreno cadastrado com sucesso.",
                   success: true,
                 });
               });
@@ -54,47 +49,23 @@ export default {
             }
           );
         });
-    }else{
-      return res.status(200).json({
-        message: "Comodante já é um usuário do Agronomi-se.",
-        success: false,
-      });
-    }
-
     } catch (error) {
       console.log(error);
       return res.status(400).json({
         data: {},
-        error: "Ocorreu um erro ao criar o Comodante.",
+        error: "Ocorreu um erro ao criar o Terreno.",
         success: false,
       });
     }
   }
 };
 
-async function usuarioExiste(cpfBody: string){
-    //Verifica se o usuário existe
-    await getDocs(collection(db, "Comodante")).then(
-      documentos => {
-        documentos.forEach(doc => {
-          let cpf = doc.data().cpfComodante;
-          
-          if(cpf === cpfBody){
-            cpfExiste = true;
-          }else{
-            cpfExiste = false;
-          }
-        });
-      }
-    );
-}
-
 function uploadArquivosFirebase(arq: any){
     const fileName = arq.originalname.split(".")[0];
 
     //Referenciando pasta de upload
     const storageRef = ref(storage, "Comodantes/");
-    const imageRef = ref(storageRef, "DocumentosPessoais/" + fileName);
+    const imageRef = ref(storageRef, "DocumentosTerreno/" + fileName);
   
     const uploadTask = uploadBytesResumable(imageRef, arq.buffer);
   

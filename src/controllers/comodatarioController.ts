@@ -43,8 +43,9 @@ export default {
                 ...body,
                 uploadDocumentoFotoComodatario: arquivosLink[0],
                 uploadComprovanteEnderecoComodatario: arquivosLink[1]
-              }).then(() => {
+              }).then((dado) => {
                 return res.status(201).json({
+                  data: dado.id,
                   message: "Comodatário cadastrado com sucesso.",
                   success: true,
                 });
@@ -92,8 +93,8 @@ function uploadArquivosFirebase(arq: any){
     const fileName = arq.originalname.split(".")[0];
 
     //Referenciando pasta de upload
-    const storageRef = ref(storage, "Comodatarios/");
-    const imageRef = ref(storageRef, "DocumentosPessoais/" + fileName);
+    const storageRef = ref(storage);
+    const imageRef = ref(storageRef, "Comodatarios/" + fileName);
   
     const uploadTask = uploadBytesResumable(imageRef, arq.buffer);
   
