@@ -29,10 +29,13 @@ router.post('/api/comodante',  upload.uploadArquivos().fields(
 router.post('/api/terreno',  upload.uploadArquivos().fields(
     [ {name: "uploadImagem"}, {name: "uploadEscritura"}]), terrenoController.createTerreno);
 router.get('/api/terreno', terrenoController.findAllTerrenos);
+// router.get('/api/terreno/busca', terrenoController.findAllTerrenosByFiltros);
 
 //AUTH\\
 router.post('/api/criarUsuarioLogin', authController.criarUsuarioLogin);
 router.post('/api/login', authController.Login);
 router.post('/api/resetSenha', authController.resetarSenha);
+router.post('/api/verificaTipoUsuario', authController.verificaTipoUsuario);
+router.get('/api/logout', authController.logoff);
     
 export {router};

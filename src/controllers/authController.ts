@@ -1,5 +1,10 @@
+import { getFirestore } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
+import { getDocs } from 'firebase/firestore';
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signOut } from "firebase/auth";
+import { getStorage } from "firebase/storage";
+import { visitFunctionBody } from 'typescript';
 
 const config = {
   apiKey: "AIzaSyDCLijI1z2jQ3INpgliN8aRlmaqQx7xBCw",
@@ -13,6 +18,8 @@ const config = {
 
 const app = initializeApp(config);
 const auth = getAuth(app);
+const storage = getStorage(app, config.storageBucket);
+const db = getFirestore(app);
 
 export default {
   async criarUsuarioLogin(req: any, res: any) {
@@ -61,17 +68,34 @@ export default {
       });
     }
   },
-  async resetarSenha(req: any, res: any) {
-    try {
-      const body: any = req.body;
-    
-      await sendPasswordResetEmail(auth, body.email)
-        .then(() => {
+  async logoff(req: any, res: any) {
+    try {    
+      await signOut(auth)
+      .then(() => {
             return res.status(200).json({
-                message: "E-mail de reset da senha enviado com sucesso!",
+                message: "Usuário deslogado com sucesso!",
                 success: true,
             });
         })
+
+    } catch (error: any) {
+      return res.status(400).json({
+        error: messageError(error.code),
+        success: false,
+      });
+    }
+  },
+  async resetarSenha(req: any, res: any) {
+    try {
+      const body: any = req.body;
+      
+      await sendPasswordResetEmail(auth, body.email)
+      .then(() => {
+            return res.status(200).json({
+              message: "E-mail de reset da senha enviado com sucesso!",
+              success: true,
+            });
+          })
 
     } catch (error: any) {
       return res.status(400).json({
@@ -79,6 +103,42 @@ export default {
         success: false,
       });
     }
+  },
+  async verificaTipoUsuario(req: any, res: any) {
+    try {
+      const body: any = req.body;
+      let usuario = {};
+
+      const comodanteRef = await getDocs(collection(db, "Comodante"));
+      const comodatarioRef = await getDocs(collection(db, "Comodatario"));
+ 
+      comodanteRef.docs.map((doc: any) => {
+        if(doc.data().emailComodante === body.email){
+          return usuario = { id: doc.id, tipoUsuario: "Comodante" };
+        }
+      }
+     );
+
+     comodatarioRef.docs.map((doc: any) =>{
+        if(doc.data().emailComodatario === body.email){
+          return usuario = { id: doc.id, tipoUsuario: "Comodatario" };
+        }
+      }
+     );
+ 
+       return res.status(200).json({
+        data: usuario,
+        message: "Tipo de usuário encontrado com sucesso.",
+        success: true,
+      });
+     } catch (error) {
+      console.log(error);
+       return res.status(400).json({
+         data: {},
+         error: "Ocorreu um erro ao identificar tipo de usuário.",
+         success: false,
+       });
+     }
   }
 }
 
