@@ -113,15 +113,15 @@ export default {
       const comodatarioRef = await getDocs(collection(db, "Comodatario"));
  
       comodanteRef.docs.map((doc: any) => {
-        if(doc.data().emailComodante === body.email){
-          return usuario = { id: doc.id, tipoUsuario: "Comodante" };
+        if(doc.data().email === body.email){
+          return usuario = { id: doc.id, tipoUsuario: "Comodante", nomeCompleto: doc.data().primeiroNome + " " + doc.data().sobrenome };
         }
       }
      );
 
      comodatarioRef.docs.map((doc: any) =>{
-        if(doc.data().emailComodatario === body.email){
-          return usuario = { id: doc.id, tipoUsuario: "Comodatario" };
+        if(doc.data().email === body.email){
+          return usuario = { id: doc.id, tipoUsuario: "Comodatario", nomeCompleto: doc.data().primeiroNome + " " + doc.data().sobrenome };
         }
       }
      );

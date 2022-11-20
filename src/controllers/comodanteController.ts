@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, updateDoc } from "firebase/firestore";
 import {
   getDownloadURL,
   getStorage,
@@ -30,10 +30,10 @@ export default {
       let arquivos: any[] = [];      
       arquivosLink = [];
 
-      await usuarioExiste(body.cpfComodante);
+      await usuarioExiste(body.cpf);
 
-      arquivos.push(req.files["uploadDocumentoFotoComodante"][0], req.files["uploadComprovanteEnderecoComodante"][0]);
-    
+      arquivos.push(req.files["uploadDocumentoFoto"][0], req.files["uploadComprovanteEndereco"][0]);
+
       if(!cpfExiste){
         arquivos.forEach(async arq => {
           await uploadArquivosFirebase(arq).then(
@@ -41,8 +41,8 @@ export default {
               if(resp === 2){                
               await addDoc(collection(db, "Comodante"), { 
                 ...body,
-                uploadDocumentoFotoComandante: arquivosLink[0],
-                uploadComprovanteEnderecoComandante: arquivosLink[1]
+                uploadDocumentoFoto: arquivosLink[0],
+                uploadComprovanteEndereco: arquivosLink[1]
               }).then((dado) => {
                 return res.status(201).json({                  
                   data: dado.id,
@@ -69,6 +69,33 @@ export default {
         success: false,
       });
     }
+  },
+  async addTerrenoComodante(req: any, res: any) {
+    try {
+      const body: any = req.body;
+      const comodanteRef = doc(db, "Comodante", body.idComodante);
+
+      let comodante = (await getDoc(comodanteRef)).data()
+      let terrenosComodante = [];
+      
+      terrenosComodante.push(...comodante?.terreno, body.idTerreno);
+      
+      await updateDoc(comodanteRef, {
+       terreno: terrenosComodante
+      });      
+
+      return res.status(201).json({
+        message: "Terreno relacionado ao Comodante com sucesso.",
+        success: true,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        data: {},
+        error: "Ocorreu um erro ao relacionar terreno ao comodante.",
+        success: false,
+      });
+    }
   }
 };
 
@@ -77,7 +104,7 @@ async function usuarioExiste(cpfBody: string){
     await getDocs(collection(db, "Comodante")).then(
       documentos => {
         documentos.forEach(doc => {
-          let cpf = doc.data().cpfComodante;
+          let cpf = doc.data().cpf;
           
           if(cpf === cpfBody){
             cpfExiste = true;

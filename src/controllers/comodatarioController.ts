@@ -30,9 +30,9 @@ export default {
       let arquivos: any[] = [];      
       arquivosLink = [];
 
-      await usuarioExiste(body.cpfComdatario);
+      await usuarioExiste(body.cpf);
 
-      arquivos.push(req.files["uploadDocumentoFotoComodatario"][0], req.files["uploadComprovanteEnderecoComodatario"][0]);
+      arquivos.push(req.files["uploadDocumentoFoto"][0], req.files["uploadComprovanteEndereco"][0]);
     
       if(!cpfExiste){
         arquivos.forEach(async arq => {
@@ -41,8 +41,8 @@ export default {
               if(resp === 2){                
               await addDoc(collection(db, "Comodatario"), { 
                 ...body,
-                uploadDocumentoFotoComodatario: arquivosLink[0],
-                uploadComprovanteEnderecoComodatario: arquivosLink[1]
+                uploadDocumentoFoto: arquivosLink[0],
+                uploadComprovanteEndereco: arquivosLink[1]
               }).then((dado) => {
                 return res.status(201).json({
                   data: dado.id,
@@ -77,7 +77,7 @@ async function usuarioExiste(cpfBody: string){
     await getDocs(collection(db, "Comodatario")).then(
       documentos => {
         documentos.forEach(doc => {
-          let cpf = doc.data().cpfComodatario;
+          let cpf = doc.data().cpf;
           
           if(cpf === cpfBody){
             cpfExiste = true;
