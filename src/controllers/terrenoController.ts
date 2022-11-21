@@ -39,8 +39,9 @@ export default {
                 ...body,
                 uploadImagem: arquivosLink[0],
                 uploadEscritura: arquivosLink[1]
-              }).then(() => {
+              }).then((dado) => {
                 return res.status(201).json({
+                  data: dado.id,
                   message: "Terreno cadastrado com sucesso.",
                   success: true,
                 });
@@ -60,15 +61,67 @@ export default {
   },
   async findAllTerrenos(req: any, res: any) {
     try {
-     const terrenosRef = await getDocs(collection(db, "Terreno"));
+     const terrenosRef = await (await getDocs(collection(db, "Terreno")));
 
-     const terrenos = terrenosRef.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+     let terrenos = terrenosRef.docs.map((doc: any) => {
+      if(doc.data().comodatario === ""){
+        return { id: doc.id, ...doc.data() }
+      }else{
+        return;
+      }
+     });
+
+      terrenos = terrenos.filter(doc => doc != null);
+
+      return res.status(200).json(terrenos);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        data: [],
+        error: "Ocorreu um erro ao buscar os terrenos.",
+        success: false,
+      });
+    }
+  },
+  async findAllTerrenosByFiltros(req: any, res: any) {
+    try {
+     const body: any = req.body;
+     const terrenosRef = await getDocs(collection(db, "Terreno"));
+     let terrenos: any = [];
+   
+     terrenos = terrenosRef.docs.map((terreno: any) => {
+      if(body.cidade === "" && body.estado === ""){
+          if(parseInt(terreno.data().metragem) >= body.metragem[0] && terreno.data().metragem <= body.metragem[1]){
+            return {id: terreno.id, ...terreno.data() };
+          }
+        }else if(body.cidade != "" && body.estado != ""){
+            if(terreno.data().cidade === body.cidade && terreno.data().estado === body.estado){
+              if(parseInt(terreno.data().metragem) >= body.metragem[0] && terreno.data().metragem <= body.metragem[1]){
+                return {id: terreno.id, ...terreno.data() };
+              }
+            }
+          }else if(body.cidade != ""  && body.estado === ""){
+            if(terreno.data().cidade === body.cidade){
+              if(parseInt(terreno.data().metragem) >= body.metragem[0] && terreno.data().metragem <= body.metragem[1]){
+                return {id: terreno.id, ...terreno.data() };
+              }
+            }
+          }else if(body.estado != "" && body.cidade === ""){
+            if(terreno.data().estado === body.estado){
+              if(parseInt(terreno.data().metragem) >= body.metragem[0] && terreno.data().metragem <= body.metragem[1]){
+                return {id: terreno.id, ...terreno.data() };
+              }
+            }
+          }
+      });
+
+      terrenos = terrenos.filter((doc: any) => doc != null);
 
       return res.status(200).json(terrenos);
     } catch (error) {
       return res.status(400).json({
         data: [],
-        error: "Ocorreu um erro ao buscar os terrenos.",
+        error: "Ocorreu um erro ao filtrar os terrenos.",
         success: false,
       });
     }

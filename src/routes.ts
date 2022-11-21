@@ -30,7 +30,7 @@ router.post('/api/addTerrenoComodante', comodanteController.addTerrenoComodante)
 router.post('/api/terreno',  upload.uploadArquivos().fields(
     [ {name: "uploadImagem"}, {name: "uploadEscritura"}]), terrenoController.createTerreno);
 router.get('/api/terreno', terrenoController.findAllTerrenos);
-// router.get('/api/terreno/busca', terrenoController.findAllTerrenosByFiltros);
+router.post('/api/terrenosByfiltro', terrenoController.findAllTerrenosByFiltros);
 
 //AUTH\\
 router.post('/api/criarUsuarioLogin', authController.criarUsuarioLogin);
