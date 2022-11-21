@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, updateDoc } from "firebase/firestore";
 import {
   getDownloadURL,
   getStorage,
@@ -69,7 +69,35 @@ export default {
         success: false,
       });
     }
-  }
+  },
+  async addTerrenoComodatario(req: any, res: any) {
+    try {
+      const body: any = req.body;
+      const ComodatarioRef = doc(db, "Comodatario", body.idComodatario);
+      const TerrenoRef = doc(db, "Terreno", body.idTerreno);
+      
+      await updateDoc(ComodatarioRef, {
+       terreno: body.idTerreno
+      });     
+
+      await updateDoc(TerrenoRef, {
+       comodatario: body.idComodatario
+      });      
+
+      return res.status(201).json({
+        message: "Terreno relacionado ao Comodatário com sucesso.",
+        success: true,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        data: {},
+        error: "Ocorreu um erro ao relacionar terreno ao Comodatário.",
+        success: false,
+      });
+    }
+  },
+
 };
 
 async function usuarioExiste(cpfBody: string){

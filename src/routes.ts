@@ -20,6 +20,7 @@ router.get('/api/conteudos', conteudoController.findAllConteudos);
 // COMODATÁRIO \\
 router.post('/api/comodatario', upload.uploadArquivos().fields(
     [ {name: "uploadDocumentoFoto"}, {name: "uploadComprovanteEndereco"}]), comodatarioController.createComodatario);
+router.post('/api/addTerrenoComodatario', comodatarioController.addTerrenoComodatario);
 
 // COMODANTE \\
 router.post('/api/comodante',  upload.uploadArquivos().fields(
@@ -31,6 +32,8 @@ router.post('/api/terreno',  upload.uploadArquivos().fields(
     [ {name: "uploadImagem"}, {name: "uploadEscritura"}]), terrenoController.createTerreno);
 router.get('/api/terreno', terrenoController.findAllTerrenos);
 router.post('/api/terrenosByfiltro', terrenoController.findAllTerrenosByFiltros);
+router.post('/api/buscarTerrenoComodatario', terrenoController.findTerrenoComodatario);
+router.post('/api/buscarTerrenoComodante', terrenoController.findTerrenoComodante);
 
 //AUTH\\
 router.post('/api/criarUsuarioLogin', authController.criarUsuarioLogin);

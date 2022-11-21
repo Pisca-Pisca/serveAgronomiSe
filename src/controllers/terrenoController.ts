@@ -126,6 +126,56 @@ export default {
       });
     }
   },
+  async findTerrenoComodatario(req: any, res: any) {
+    try {
+     const body: any = req.body;
+     const terrenosRef = await (await getDocs(collection(db, "Terreno")));
+
+     let terrenos = terrenosRef.docs.map((doc: any) => {
+      if(doc.data().comodatario === body.idComodatario){
+        return { id: doc.id, ...doc.data() }
+      }else{
+        return;
+      }
+     });
+
+      terrenos = terrenos.filter(doc => doc != null);
+
+      return res.status(200).json(terrenos);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        data: [],
+        error: "Ocorreu um erro ao buscar os terrenos.",
+        success: false,
+      });
+    }
+  },
+  async findTerrenoComodante(req: any, res: any) {
+    try {
+     const body: any = req.body;
+     const terrenosRef = await (await getDocs(collection(db, "Terreno")));
+
+     let terrenos = terrenosRef.docs.map((doc: any) => {
+      if(doc.data().comodante === body.idComodante){
+        return { id: doc.id, ...doc.data() }
+      }else{
+        return;
+      }
+     });
+
+      terrenos = terrenos.filter(doc => doc != null);
+
+      return res.status(200).json(terrenos);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        data: [],
+        error: "Ocorreu um erro ao buscar os terrenos.",
+        success: false,
+      });
+    }
+  }
 };
 
 function uploadArquivosFirebase(arq: any){
