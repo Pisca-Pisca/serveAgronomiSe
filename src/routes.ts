@@ -21,6 +21,7 @@ router.get('/api/conteudos', conteudoController.findAllConteudos);
 router.post('/api/comodatario', upload.uploadArquivos().fields(
     [ {name: "uploadDocumentoFoto"}, {name: "uploadComprovanteEndereco"}]), comodatarioController.createComodatario);
 router.post('/api/addTerrenoComodatario', comodatarioController.addTerrenoComodatario);
+router.post('/api/removerTerrenoComodatario', comodatarioController.removerTerrenoComodatario);
 
 // COMODANTE \\
 router.post('/api/comodante',  upload.uploadArquivos().fields(

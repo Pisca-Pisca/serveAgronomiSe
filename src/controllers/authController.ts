@@ -41,7 +41,7 @@ export default {
     } catch (error) {
       console.log(error);
       return res.status(400).json({
-        error: "Ocorreu um erro ao criar o login do Comodante.",
+        error: "Ocorreu um erro ao criar o login do usuário.",
         success: false,
       });
     }

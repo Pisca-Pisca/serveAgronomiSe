@@ -84,7 +84,7 @@ export default {
        comodatario: body.idComodatario
       });      
 
-      return res.status(201).json({
+      return res.status(200).json({
         message: "Terreno relacionado ao Comodatário com sucesso.",
         success: true,
       });
@@ -97,7 +97,33 @@ export default {
       });
     }
   },
+  async removerTerrenoComodatario(req: any, res: any) {
+    try {
+      const body: any = req.body;
+      const ComodatarioRef = doc(db, "Comodatario", body.idComodatario);
+      const TerrenoRef = doc(db, "Terreno", body.idTerreno);
+      
+      await updateDoc(ComodatarioRef, {
+       terreno: ""
+      });     
 
+      await updateDoc(TerrenoRef, {
+       comodatario: ""
+      });      
+
+      return res.status(200).json({
+        message: "Terreno relacionado ao Comodatário removido com sucesso.",
+        success: true,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        data: {},
+        error: "Ocorreu um erro ao remover terreno do Comodatário.",
+        success: false,
+      });
+    }
+  },
 };
 
 async function usuarioExiste(cpfBody: string){
